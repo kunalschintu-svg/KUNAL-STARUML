@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Parking Management System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#0e1630;--card:#16213f;--card2:#1c2a4f;--line:#2b3b68;--ink:#eef1fa;--mute:#9aa8cc;--gold:#ffd23f;--cyan:#38c6f4;--ok:#3ddc97;--bad:#ff6b6b;--r:14px}
+@media(prefers-color-scheme:light){:root{--bg:#eef1f8;--card:#fff;--card2:#f3f5fb;--line:#d6dcec;--ink:#14204a;--mute:#5a6890}}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 500px at 70% -10%,#1b2b5e 0,transparent 60%),var(--bg);color:var(--ink);font:400 15px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+h1,h2,h3{font-family:Sora,Inter,sans-serif;margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1.2rem 1.6rem;border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:.8rem;align-items:center}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--gold);color:#14204a;display:grid;place-items:center;font:700 1.4rem Sora,sans-serif}
+.brand p{margin:0;color:var(--mute);font-size:.85rem}
+.stats{display:flex;gap:.7rem;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.5rem 1rem;min-width:110px}
+.stat b{display:block;font:600 1.5rem Sora,sans-serif}
+.stat span{color:var(--mute);font-size:.78rem}
+.wrap{display:grid;grid-template-columns:300px 1fr 330px;gap:1.1rem;padding:1.3rem 1.6rem}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem}
+.card h2{font-size:1.05rem;margin-bottom:.8rem}
+label{display:block;font-size:.8rem;color:var(--mute);margin:.9rem 0 .35rem}
+input[type=text],select{width:100%;padding:.65rem .8rem;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
+.seg button{padding:.6rem .2rem;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink);cursor:pointer;font:500 .82rem Inter,sans-serif;display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.seg button[aria-pressed=true]{border-color:var(--gold);background:#ffd23f22;color:var(--gold)}
+.seg.two{grid-template-columns:1fr 1fr}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.primary{width:100%;margin-top:1.1rem;padding:.8rem;border:0;border-radius:12px;background:var(--gold);color:#14204a;font:600 1rem Sora,sans-serif;cursor:pointer}
+.primary:hover{filter:brightness(1.08)}
+.hint{font-size:.78rem;color:var(--mute);margin:.6rem 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.7rem}
+.slot{border-radius:12px;border:1px dashed var(--line);background:var(--card2);min-height:104px;padding:.6rem;display:flex;flex-direction:column;justify-content:space-between;font-size:.78rem;color:var(--mute);text-align:left;font-family:inherit}
+.slot .n{font:600 .75rem Sora,sans-serif}
+.slot.busy{border:1px solid var(--cyan);border-style:solid;background:linear-gradient(160deg,#38c6f433,#38c6f40d);color:var(--ink)}
+.slot.busy.ev{border-color:var(--ok);background:linear-gradient(160deg,#3ddc9733,#3ddc970d)}
+.slot.busy.bike{border-color:var(--gold);background:linear-gradient(160deg,#ffd23f33,#ffd23f0d)}
+.slot b{font:600 .85rem Sora,sans-serif;display:block}
+.legend{display:flex;gap:1rem;font-size:.78rem;color:var(--mute);margin-top:.9rem;flex-wrap:wrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:.35rem}
+.board{background:#070d20;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;margin-bottom:1rem}
+.board .t{display:flex;justify-content:space-between;font:600 .8rem Sora,sans-serif;color:var(--mute);margin-bottom:.4rem}
+.row{display:flex;justify-content:space-between;align-items:baseline;font-family:Sora,sans-serif;padding:.15rem 0}
+.row strong{font-size:1.8rem;color:var(--gold)}
+.row strong.full{color:var(--bad)}
+.tk{display:grid;grid-template-columns:1fr auto;gap:.4rem .6rem;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--line)}
+.tk small{color:var(--mute);display:block}
+.tk select{width:auto;padding:.3rem .4rem;font-size:.8rem}
+.tk .ex{padding:.4rem .8rem;border-radius:9px;border:1px solid var(--bad);background:transparent;color:var(--bad);cursor:pointer;font:500 .82rem Inter,sans-serif}
+.tk .ex:hover{background:var(--bad);color:#fff}
+.empty{color:var(--mute);font-size:.85rem;padding:.5rem 0}
+#log{list-style:none;margin:0;padding:0;max-height:150px;overflow:auto;font-size:.8rem;color:var(--mute)}
+#log li{padding:.25rem 0;border-bottom:1px solid var(--line)}
+#toast{position:fixed;right:1.2rem;bottom:1.2rem;background:var(--ok);color:#06251a;font-weight:600;padding:.8rem 1.1rem;border-radius:12px;max-width:320px;transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}
+#toast.show{transform:none;opacity:1}
+#toast.err{background:var(--bad);color:#fff}
+.chip{font-size:.7rem;padding:.1rem .45rem;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-left:.3rem}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="car" viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7 19v-3M17 19v-3"/><circle cx="8" cy="13" r=".6"/><circle cx="16" cy="13" r=".6"/></symbol>
+<symbol id="bike" viewBox="0 0 24 24"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h4l4 7M10 9H8"/></symbol>
+<symbol id="ev" viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7 19v-3M17 19v-3M12.5 8l-2 3h3l-2 3"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand"><div class="logo">P</div><div><h1>Smart parking</h1><p>Real-time slot management dashboard</p></div></div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main class="wrap">
+  <section class="card" aria-labelledby="eh">
+    <h2 id="eh">Vehicle entry</h2>
+    <label for="plate">Number plate</label>
+    <input type="text" id="plate" value="KA01AB1234" autocomplete="off" maxlength="12">
+    <label id="vl">Vehicle type</label>
+    <div class="seg" role="group" aria-labelledby="vl" id="vtype">
+      <button type="button" data-v="Car" aria-pressed="true"><svg class="i"><use href="#car"/></svg>Car</button>
+      <button type="button" data-v="Bike" aria-pressed="false"><svg class="i"><use href="#bike"/></svg>Bike</button>
+      <button type="button" data-v="ElectricVehicle" aria-pressed="false"><svg class="i"><use href="#ev"/></svg>Electric</button>
+    </div>
+    <label id="pl">Pricing rule</label>
+    <div class="seg two" role="group" aria-labelledby="pl" id="ptype">
+      <button type="button" data-p="hourly" aria-pressed="true">Hourly</button>
+      <button type="button" data-p="ev" aria-pressed="false">EV pricing</button>
+    </div>
+    <button class="primary" id="park">Park vehicle</button>
+    <p class="hint">Hourly: ₹30 per hour. EV pricing: ₹20 per hour. Bikes pay half of either rate.</p>
+  </section>
+
+  <section class="card" aria-labelledby="sh">
+    <h2 id="sh">Parking slots</h2>
+    <div class="grid" id="grid"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--cyan)"></i>Car</span>
+      <span><i class="dot" style="background:var(--gold)"></i>Bike</span>
+      <span><i class="dot" style="background:var(--ok)"></i>Electric</span>
+      <span><i class="dot" style="border:1px dashed var(--mute)"></i>Free</span>
+    </div>
+  </section>
+
+  <aside>
+    <div class="board" aria-live="polite"><div class="t"><span>DISPLAY BOARD</span><span>Free slots</span></div><div id="board"></div></div>
+    <section class="card" style="margin-bottom:1rem"><h2>Active tickets</h2><div id="tickets"></div></section>
+    <section class="card"><h2>Activity</h2><ul id="log"></ul></section>
+  </aside>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+// ---------- Factory + Vehicle hierarchy ----------
+class Vehicle{constructor(p){this.plateNumber=p}get kind(){return"vehicle"}}
+class Car extends Vehicle{get kind(){return"car"}}
+class Bike extends Vehicle{get kind(){return"bike"}}
+class ElectricVehicle extends Vehicle{get kind(){return"ev"}}
+class VehicleFactory{static createVehicle(type,plate){return new{Car,Bike,ElectricVehicle}[type](plate)}}
+// ---------- Strategy ----------
+class HourlyPricing{calculateFee(v,h){return(v.kind==="bike"?15:30)*h}}
+class EVPricing{calculateFee(v,h){return(v.kind==="bike"?10:20)*h}}
+// ---------- Observer ----------
+class ParkingObserver{update(msg,data){}}
+class DisplayBoard extends ParkingObserver{update(){const f=lot.freeByType(),free=lot.slots.filter(s=>s.isFree).length;
+  $("board").innerHTML=`<div class="row"><span>Total free</span><strong class="${free?"":"full"}">${free?free:"Full"}</strong></div><div class="row" style="font-size:.85rem;color:var(--mute)"><span>${lot.slots.length-free} occupied of ${lot.slots.length}</span></div>`;
+  $("stats").innerHTML=[["Free",free],["Occupied",lot.slots.length-free],["Revenue","₹"+lot.revenue]].map(([a,b])=>`<div class="stat"><b>${b}</b><span>${a}</span></div>`).join("")}}
+class ActivityLog extends ParkingObserver{update(msg){if(!msg)return;const li=document.createElement("li");li.textContent=msg;$("log").prepend(li)}}
+class Toast extends ParkingObserver{update(msg,d){if(!msg)return;const t=$("toast");t.textContent=msg;t.className="show"+(d&&d.error?" err":"");clearTimeout(Toast.h);Toast.h=setTimeout(()=>t.className="",2600)}}
+class SlotGrid extends ParkingObserver{update(){render()}}
+// ---------- Domain ----------
+class ParkingSlot{constructor(id){this.slotId=id;this.vehicle=null}get isFree(){return!this.vehicle}park(v){this.vehicle=v}release(){const v=this.vehicle;this.vehicle=null;return v}}
+class Ticket{constructor(id,slot,v){this.ticketId=id;this.slot=slot;this.vehicle=v;this.entryTime=Date.now()}}
+// ---------- Singleton ParkingLot ----------
+class ParkingLot{
+ static getInstance(){return ParkingLot._i||(ParkingLot._i=new ParkingLot())}
+ constructor(){this.slots=Array.from({length:12},(_,i)=>new ParkingSlot(i+1));this.tickets=[];this.observers=[];this.pricing=new HourlyPricing();this.revenue=0;this.seq=1000}
+ attach(o){this.observers.push(o)}
+ notifyObservers(msg,data){this.observers.forEach(o=>o.update(msg,data))}
+ freeByType(){return this.slots.filter(s=>s.isFree).length}
+ parkVehicle(v){
+  if(this.tickets.some(t=>t.vehicle.plateNumber===v.plateNumber))return this.notifyObservers(`${v.plateNumber} is already parked.`,{error:1});
+  const s=this.slots.find(s=>s.isFree);if(!s)return this.notifyObservers("Parking is full. No free slot available.",{error:1});
+  s.park(v);const t=new Ticket("T"+ ++this.seq,s,v);this.tickets.push(t);
+  this.notifyObservers(`${v.plateNumber} parked in slot ${s.slotId}. Ticket ${t.ticketId}.`);return t}
+ exitVehicle(id,hours){const i=this.tickets.findIndex(t=>t.ticketId===id);if(i<0)return;
+  const t=this.tickets.splice(i,1)[0],fee=this.pricing.calculateFee(t.vehicle,hours);t.slot.release();this.revenue+=fee;
+  this.notifyObservers(`${t.vehicle.plateNumber} exited after ${hours} h. Fee ₹${fee}.`);return fee}
+}
+// ---------- UI ----------
+const $=id=>document.getElementById(id);
+const lot=ParkingLot.getInstance();
+[new DisplayBoard(),new ActivityLog(),new Toast(),new SlotGrid()].forEach(o=>lot.attach(o));
+let vType="Car";
+const icon=k=>({car:"car",bike:"bike",ev:"ev"}[k]);
+function render(){
+ $("grid").innerHTML=lot.slots.map(s=>{const v=s.vehicle;
+  return v?`<div class="slot busy ${v.kind}"><span class="n">Slot ${s.slotId}</span><svg class="i"><use href="#${icon(v.kind)}"/></svg><b>${v.plateNumber}</b></div>`
+  :`<div class="slot"><span class="n">Slot ${s.slotId}</span><span>Free</span><span></span></div>`}).join("");
+ $("tickets").innerHTML=lot.tickets.length?lot.tickets.map(t=>`<div class="tk"><div><b>${t.vehicle.plateNumber}</b><span class="chip">${t.ticketId}</span><small>Slot ${t.slot.slotId}</small></div>
+  <div><select aria-label="Hours parked for ${t.vehicle.plateNumber}" id="h-${t.ticketId}">${[1,2,3,4,6,8,12].map(h=>`<option value="${h}"${h===2?" selected":""}>${h} h</option>`).join("")}</select>
+  <button class="ex" data-t="${t.ticketId}">Exit</button></div></div>`).join(""):`<p class="empty">No vehicles parked. Add one to get a ticket.</p>`}
+document.querySelectorAll("#vtype button").forEach(b=>b.onclick=()=>{vType=b.dataset.v;document.querySelectorAll("#vtype button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+document.querySelectorAll("#ptype button").forEach(b=>b.onclick=()=>{lot.pricing=b.dataset.p==="ev"?new EVPricing():new HourlyPricing();
+ document.querySelectorAll("#ptype button").forEach(x=>x.setAttribute("aria-pressed",x===b));lot.notifyObservers(`Pricing changed to ${b.textContent}.`)});
+$("park").onclick=()=>{const p=$("plate").value.trim().toUpperCase();if(!p)return lot.notifyObservers("Enter a number plate first.",{error:1});
+ if(lot.parkVehicle(VehicleFactory.createVehicle(vType,p)))$("plate").value="KA"+(10+Math.floor(Math.random()*89))+"XY"+(1000+Math.floor(Math.random()*8999))};
+$("tickets").onclick=e=>{const id=e.target.dataset.t;if(id)lot.exitVehicle(id,+$("h-"+id).value)};
+["KA01AB1234:Car","KA05MN7788:ElectricVehicle","KA03ZP4521:Bike","KA09CD0042:Car","KA51EV2026:ElectricVehicle"].forEach(x=>{const[p,t]=x.split(":");lot.parkVehicle(VehicleFactory.createVehicle(t,p))});
+$("log").innerHTML="";$("toast").className="";$("plate").value="KA02RT9090";
+lot.notifyObservers("Dashboard ready. Park or exit vehicles to see live updates.");
+</script>
+</body>
+</html>
